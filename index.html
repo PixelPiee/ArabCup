@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ريماتش - بطولة كأس العرب</title>
+  <meta name="description" content="ريماتش - نظام إدارة وجدولة بطولات كأس العرب، تتبع المباريات والترتيب والأدوار النهائية.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  
+  <!-- Logo SVG Definition (Gradient) -->
+  <svg style="display: none;">
+    <defs>
+      <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#6366f1" />
+        <stop offset="100%" stop-color="#3b82f6" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container nav-container">
+      <div class="logo-section">
+        <svg viewBox="0 0 24 24" width="30" height="30">
+          <path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm1,14H11V10h2Zm0-8H11V6h2Z"/>
+        </svg>
+        <span>REMATCH</span>
+      </div>
+      
+      <nav id="nav-tabs-container">
+        <div class="nav-tabs">
+          <button class="nav-tab active" data-tab="home" id="tab-btn-home" data-i18n="navHome">الرئيسية</button>
+          <button class="nav-tab" data-tab="matches" id="tab-btn-matches" data-i18n="navMatches">المباريات</button>
+          <button class="nav-tab" data-tab="standings" id="tab-btn-standings" data-i18n="navStandings">الترتيب</button>
+          <button class="nav-tab" data-tab="bracket" id="tab-btn-bracket" data-i18n="navBracket">الأدوار النهائية</button>
+          <button class="nav-tab" data-tab="admin" id="tab-btn-admin" data-i18n="navAdmin">لوحة التحكم</button>
+        </div>
+      </nav>
+      
+      <div class="header-actions">
+        <!-- Language Switcher Button -->
+        <button class="btn-icon btn-lang" id="btn-lang-toggle">EN</button>
+        <!-- Admin Status Indicator -->
+        <button class="btn-icon btn-admin" id="btn-admin-status" title="Admin Mode">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero">
+    <div class="container">
+      <h1 id="hero-title" data-i18n="title">كأس العرب - ريماتش</h1>
+      <p id="hero-desc" data-i18n="heroSubtitle">تتبع المباريات، واعرض الجداول، واحسب النقاط، ودر الأدوار النهائية لبطولة كأس العرب.</p>
+      
+      <!-- Tournament Selector Dropdown -->
+      <div class="active-tournament-selector">
+        <label for="active-tournament-dropdown" data-i18n="selectActiveTournament">اختر البطولة النشطة:</label>
+        <select id="active-tournament-dropdown">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Dynamic Panel Content -->
+  <main class="container main-content">
+    
+    <!-- PANEL 1: HOME/DASHBOARD -->
+    <div class="tab-panel active" id="panel-home">
+      <div class="stats-container">
+        <div class="stat-box">
+          <div class="stat-val" id="stat-active-tourney">-</div>
+          <div class="stat-lbl" data-i18n="activeTournament">البطولة الحالية</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="stat-total-tourneys">0</div>
+          <div class="stat-lbl" data-i18n="totalTournaments">إجمالي البطولات</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="stat-total-matches">0</div>
+          <div class="stat-lbl" data-i18n="totalMatches">إجمالي المباريات</div>
+        </div>
+      </div>
+      
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="section-header">
+            <h2 class="section-title" data-i18n="upcomingMatches">المباريات القادمة</h2>
+          </div>
+          <div class="matches-list" id="dashboard-upcoming-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="section-header">
+            <h2 class="section-title" data-i18n="recentResults">النتائج الأخيرة</h2>
+          </div>
+          <div class="matches-list" id="dashboard-results-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 2: MATCHES LIST -->
+    <div class="tab-panel" id="panel-matches">
+      <div class="card">
+        <div class="filters-bar">
+          <h2 class="section-title" data-i18n="navMatches">المباريات</h2>
+          <div class="filter-pills" id="match-type-filters">
+            <button class="filter-pill active" data-filter="all" data-i18n="allTypes">جميع الأنواع</button>
+            <button class="filter-pill" data-filter="matches" data-i18n="tournamentMatches">مباريات البطولة</button>
+            <button class="filter-pill" data-filter="friendlies" data-i18n="friendlies">المباريات الودية</button>
+          </div>
+        </div>
+        
+        <div class="matches-list" id="matches-full-list">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 3: STANDINGS -->
+    <div class="tab-panel" id="panel-standings">
+      <div class="card">
+        <div class="section-header">
+          <h2 class="section-title" data-i18n="standingsTitle">ترتيب البطولة</h2>
+          <!-- Score system parameters info -->
+          <div class="points-header-info" id="standings-points-info">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+        
+        <div class="standings-wrapper">
+          <table class="standings-table">
+            <thead>
+              <tr>
+                <th style="width: 60px;" data-i18n="pos">الترتيب</th>
+                <th data-i18n="team">الفريق</th>
+                <th style="text-align: center;" data-i18n="played">لعب</th>
+                <th style="text-align: center;" data-i18n="won">فاز</th>
+                <th style="text-align: center;" data-i18n="drawn">تعادل</th>
+                <th style="text-align: center;" data-i18n="lost">خسر</th>
+                <th style="text-align: center;" data-i18n="goalsFor">له</th>
+                <th style="text-align: center;" data-i18n="goalsAgainst">عليه</th>
+                <th style="text-align: center;" data-i18n="goalDiff">الفارق</th>
+                <th style="text-align: center;" class="td-highlight" data-i18n="points">النقاط</th>
+              </tr>
+            </thead>
+            <tbody id="standings-table-body">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 4: BRACKET -->
+    <div class="tab-panel" id="panel-bracket">
+      <div class="card">
+        <div class="section-header">
+          <h2 class="section-title" data-i18n="bracketTitle">الأدوار الإقصائية</h2>
+        </div>
+        
+        <div class="bracket-scroll-container">
+          <div class="bracket-viewport" id="bracket-container">
+            <!-- Bracket round structures populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 5: ADMIN & LOCK SCREEN -->
+    <div class="tab-panel" id="panel-admin">
+      <!-- Passcode Screen (shown by default if not authorized) -->
+      <div class="card admin-lock-screen" id="admin-login-card">
+        <div class="lock-icon">🔒</div>
+        <h2 class="lock-title" data-i18n="adminRequired">مطلوب صلاحية المسؤول</h2>
+        <p class="lock-subtitle" data-i18n="enterPasscode">أدخل رمز المرور للوصول إلى عناصر التحكم</p>
+        
+        <div class="form-group" style="width: 100%;">
+          <input type="password" id="admin-passcode-input" class="form-control text-center" placeholder="1234" maxlength="6">
+          <div class="error-message" id="admin-login-error" data-i18n="invalidPasscode">رمز المرور غير صحيح. يرجى المحاولة مرة أخرى.</div>
+        </div>
+        <button class="btn mt-4" id="btn-admin-login" data-i18n="login">التحقق</button>
+      </div>
+
+      <!-- Authenticated Admin Controls -->
+      <div class="admin-dashboard-view" id="admin-controls-dashboard" style="display: none;">
+        <div class="admin-header-row">
+          <h2 data-i18n="adminControls">لوحة التحكم للمسؤول</h2>
+          <div class="form-actions-inline" style="margin-top:0;">
+            <button class="btn btn-secondary btn-small" id="btn-reset-data" data-i18n="resetData">إعادة تعيين البيانات</button>
+            <button class="btn btn-danger btn-small" id="btn-admin-logout" data-i18n="logout">خروج</button>
+          </div>
+        </div>
+
+        <!-- Backend API Settings Card -->
+        <div class="card mb-4" id="backend-settings-card">
+          <h3 class="admin-section-header">⚙️ <span data-i18n="backendSettings">إعدادات خادم البيانات (API)</span></h3>
+          <form id="form-backend-settings">
+            <div class="form-row" style="grid-template-columns: 2fr 1fr; align-items: flex-end; gap: 12px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="backend-url-input" data-i18n="backendUrl">رابط خادم البيانات (Render)</label>
+                <input type="url" id="backend-url-input" class="form-control" placeholder="https://your-backend.onrender.com" data-i18n-placeholder="backendUrlPlaceholder">
+              </div>
+              <button type="submit" class="btn" style="height: 45px; box-shadow: none;" data-i18n="save">حفظ</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="admin-grid">
+          <!-- Tournaments Management -->
+          <div class="card">
+            <h3 class="admin-section-header">🏆 <span data-i18n="manageTournaments">إدارة البطولات</span></h3>
+            
+            <form id="form-new-tournament" class="mb-4">
+              <h4 class="form-group label" style="font-weight: 700; margin-bottom: 10px;" data-i18n="createNewTournament">إنشاء بطولة جديدة</h4>
+              <div class="form-group">
+                <label for="tourney-name-en" data-i18n="tournamentNameEn">اسم البطولة (بالإنجليزي)</label>
+                <input type="text" id="tourney-name-en" class="form-control" required placeholder="e.g. Arab Champions Cup">
+              </div>
+              <div class="form-group">
+                <label for="tourney-name-ar" data-i18n="tournamentNameAr">اسم البطولة (بالعربي)</label>
+                <input type="text" id="tourney-name-ar" class="form-control" required placeholder="مثال: كأس أبطال العرب">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="tourney-pts-win" data-i18n="ptsWin">نقاط الفوز</label>
+                  <input type="number" id="tourney-pts-win" class="form-control" value="3" min="0">
+                </div>
+                <div class="form-group">
+                  <label for="tourney-pts-draw" data-i18n="ptsDraw">نقاط التعادل</label>
+                  <input type="number" id="tourney-pts-draw" class="form-control" value="1" min="0">
+                </div>
+                <div class="form-group">
+                  <label for="tourney-pts-loss" data-i18n="ptsLoss">نقاط الخسارة</label>
+                  <input type="number" id="tourney-pts-loss" class="form-control" value="0" min="0">
+                </div>
+              </div>
+              <button type="submit" class="btn mt-4" data-i18n="saveTournament">إنشاء البطولة</button>
+            </form>
+            
+            <div class="admin-list" id="admin-tournaments-list">
+              <!-- Tournaments list populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Matches Management -->
+          <div class="card">
+            <div class="section-header" style="margin-bottom: 12px;">
+              <h3 class="admin-section-header" style="margin-bottom:0;">⚽ <span data-i18n="manageMatches">إدارة المباريات</span></h3>
+              <button class="btn btn-secondary btn-small" id="btn-trigger-add-match" data-i18n="addNewMatch">إضافة مباراة جديدة +</button>
+            </div>
+            
+            <div class="admin-list" id="admin-matches-list">
+              <!-- Matches list populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ADD/EDIT MATCH MODAL DIALOG -->
+  <div class="modal" id="match-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-match-title" data-i18n="addNewMatch">إضافة مباراة جديدة</h3>
+        <button class="modal-close" id="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-match-editor">
+          <input type="hidden" id="edit-match-id">
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="match-form-team-a" data-i18n="teamA">الفريق أ</label>
+              <select id="match-form-team-a" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label for="match-form-team-b" data-i18n="teamB">الفريق ب</label>
+              <select id="match-form-team-b" class="form-control" required></select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="match-form-score-a" data-i18n="scoreA">أهداف الفريق أ</label>
+              <input type="number" id="match-form-score-a" class="form-control" min="0" placeholder="-">
+            </div>
+            <div class="form-group">
+              <label for="match-form-score-b" data-i18n="scoreB">أهداف الفريق ب</label>
+              <input type="number" id="match-form-score-b" class="form-control" min="0" placeholder="-">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="match-form-date" data-i18n="matchDate">التاريخ والوقت</label>
+            <input type="datetime-local" id="match-form-date" class="form-control" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="match-form-type" data-i18n="matchType">نوع المباراة</label>
+              <select id="match-form-type" class="form-control">
+                <option value="Tournament Match">مباراة بطولة (Tournament Match)</option>
+                <option value="Friendly">مباراة ودية (Friendly)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="match-form-stage" data-i18n="matchStage">المرحلة</label>
+              <select id="match-form-stage" class="form-control">
+                <option value="Group Stage">دور المجموعات (Group Stage)</option>
+                <option value="Quarter-Finals">ربع النهائي (Quarter-Finals)</option>
+                <option value="Semi-Finals">نصف النهائي (Semi-Finals)</option>
+                <option value="Final">النهائي (Final)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="match-form-status" data-i18n="matchStatus">حالة المباراة</label>
+            <select id="match-form-status" class="form-control">
+              <option value="Upcoming">قادمة (Upcoming)</option>
+              <option value="Live">مباشر (Live)</option>
+              <option value="Finished">منتهية (Finished)</option>
+            </select>
+          </div>
+
+          <div class="form-actions-inline">
+            <button type="button" class="btn btn-secondary" id="btn-cancel-modal" data-i18n="resetData">إلغاء</button>
+            <button type="submit" class="btn" data-i18n="saveMatch">حفظ المباراة</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Toast Notifications -->
+  <div class="toast" id="toast-notification">
+    <span id="toast-message"></span>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 REMATCH. All Rights Reserved. &bull; جميع الحقوق محفوظة لريماتش</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/translations.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
