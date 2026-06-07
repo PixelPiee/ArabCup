@@ -163,6 +163,47 @@ class RematchDataStore {
     }
   }
 
+ export async function getTeams() {
+  if (isApiActive) {
+    try {
+      const resp = await fetch(`${apiBaseUrl}/api/data`);
+      const db = await resp.json();
+      return db.teams || {};
+    } catch (e) {
+      console.warn('API fetch failed, falling back to localStorage', e);
+      return JSON.parse(localStorage.getItem('rematchData')).teams || {};
+    }
+  } else {
+    return JSON.parse(localStorage.getItem('rematchData')).teams || {};
+  }
+}
+
+export async function addTeam(team) {
+  if (isApiActive) {
+    const resp = await fetch(`${apiBaseUrl}/api/teams`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(team),
+    });
+    if (!resp.ok) throw new Error('Failed to add team');
+  } else {
+    const data = JSON.parse(localStorage.getItem('rematchData'));
+    data.teams[team.id] = { nameEn: team.nameEn, nameAr: team.nameAr, flagUrl: team.flagUrl };
+    localStorage.setItem('rematchData', JSON.stringify(data));
+  }
+}
+
+export async function deleteTeam(teamId) {
+  if (isApiActive) {
+    const resp = await fetch(`${apiBaseUrl}/api/teams/${teamId}`, { method: 'DELETE' });
+    if (!resp.ok) throw new Error('Failed to delete team');
+  } else {
+    const data = JSON.parse(localStorage.getItem('rematchData'));
+    delete data.teams[teamId];
+    localStorage.setItem('rematchData', JSON.stringify(data));
+  }
+}
+
   async setBackendUrl(url) {
     // Strip trailing slashes
     this.backendUrl = url ? url.replace(/\/+$/, "") : "";
