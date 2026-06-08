@@ -80,6 +80,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnCancelModal = document.getElementById("btn-cancel-modal");
   
   const matchFormId = document.getElementById("edit-match-id");
+  const matchFormTournament = document.getElementById("match-form-tournament");
   const matchFormTeamA = document.getElementById("match-form-team-a");
   const matchFormTeamB = document.getElementById("match-form-team-b");
   const matchFormScoreA = document.getElementById("match-form-score-a");
@@ -175,6 +176,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     matchFormTeamA.innerHTML = options;
     matchFormTeamB.innerHTML = options;
+
+    let tOptions = "";
+    store.tournaments.forEach(t => {
+      const name = currentLang === "ar" ? t.nameAr : t.nameEn;
+      tOptions += `<option value="${t.id}">${name}</option>`;
+    });
+    matchFormTournament.innerHTML = tOptions;
   }
 
   // Handle file reading for team flag — resize to max 120×80 to stay within localStorage limits
@@ -779,6 +787,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       modalMatchTitle.textContent = getTranslation("editMatch");
       
       matchFormId.value = match.id;
+      matchFormTournament.value = match.tournamentId;
       matchFormTeamA.value = match.teamA;
       matchFormTeamB.value = match.teamB;
       matchFormScoreA.value = match.scoreA !== null ? match.scoreA : "";
@@ -1076,6 +1085,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     editingMatchId = null;
     formMatchEditor.reset();
     matchFormId.value = "";
+    matchFormTournament.value = store.activeTournamentId;
     
     const now = new Date();
     const year = now.getFullYear();
@@ -1105,6 +1115,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   formMatchEditor.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    const tournamentId = matchFormTournament.value;
     const teamA = matchFormTeamA.value;
     const teamB = matchFormTeamB.value;
     
@@ -1132,7 +1143,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (editingMatchId) {
       const updatedMatch = {
         id: editingMatchId,
-        tournamentId: store.activeTournamentId,
+        tournamentId,
         teamA, teamB, scoreA, scoreB, date, type, stage, status, winner
       };
       await store.updateMatch(updatedMatch);
@@ -1141,7 +1152,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
       const newMatch = {
         id: "match-" + Date.now(),
-        tournamentId: store.activeTournamentId,
+        tournamentId,
         teamA, teamB, scoreA, scoreB, date, type, stage, status, winner
       };
       await store.addMatch(newMatch);
