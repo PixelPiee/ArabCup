@@ -303,7 +303,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function handleAdminLogin() {
     const passcode = inputAdminPasscode.value.trim();
-    if (passcode === "1234") {
+    if (passcode === "3209") {
       isAdminAuthorized = true;
       sessionStorage.setItem("rematch_admin", "true");
       errorAdminLogin.style.display = "none";
@@ -768,6 +768,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     deleteTourney: async (id) => {
       if (confirm(currentLang === "ar" ? "هل أنت متأكد من حذف هذه البطولة وجميع مبارياتها؟" : "Are you sure you want to delete this tournament and all its matches?")) {
         await store.deleteTournament(id);
+        populateTeamSelectors();
         renderAll();
         showToast(currentLang === "ar" ? "تم حذف البطولة بنجاح" : "Tournament deleted successfully");
       }
