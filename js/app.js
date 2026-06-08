@@ -683,7 +683,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     let tourneysHtml = "";
     tourneys.forEach(t => {
       const name = currentLang === "ar" ? t.nameAr : t.nameEn;
-      const isDeleteDisabled = store.tournaments.length <= 1 ? "disabled" : "";
 
       tourneysHtml += `
         <div class="admin-list-item">
@@ -691,7 +690,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <span class="item-title">${name}</span>
             <span class="item-subtitle">${t.ptsWin}/${t.ptsDraw}/${t.ptsLoss} Pts System</span>
           </div>
-          <button class="btn btn-danger btn-small" onclick="window.rematchAdminActions.deleteTourney('${t.id}')" ${isDeleteDisabled}>🗑️</button>
+          <button class="btn btn-danger btn-small" onclick="window.rematchAdminActions.deleteTourney('${t.id}')">🗑️</button>
         </div>
       `;
     });
