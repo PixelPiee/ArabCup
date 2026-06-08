@@ -948,17 +948,10 @@ body[dir="rtl"] .form-group {
   display: none;
 }
 
-/* Admin Dashboard View */
 .admin-grid {
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
-}
-
-@media (max-width: 850px) {
-  .admin-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .admin-header-row {

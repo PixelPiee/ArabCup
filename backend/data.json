@@ -38,7 +38,7 @@
       "teamB": "Egypt",
       "scoreA": null,
       "scoreB": null,
-      "date": "2026-06-03T22:00:00",
+      "date": "2026-06-15T22:00:00",
       "type": "Tournament Match",
       "stage": "Group Stage",
       "status": "Upcoming",
@@ -84,197 +84,117 @@
       "winner": "Draw"
     },
     {
-      "id": "ac-qf-1",
-      "tournamentId": "arab-cup-2026",
-      "teamA": "Yemen",
-      "teamB": "Morocco",
-      "scoreA": 3,
-      "scoreB": 1,
-      "date": "2026-06-15T18:00:00",
-      "type": "Tournament Match",
-      "stage": "Quarter-Finals",
-      "status": "Finished",
-      "winner": "Yemen"
-    },
-    {
-      "id": "ac-qf-2",
-      "tournamentId": "arab-cup-2026",
-      "teamA": "Saudi Arabia",
-      "teamB": "Egypt",
-      "scoreA": 2,
-      "scoreB": 0,
-      "date": "2026-06-15T21:00:00",
-      "type": "Tournament Match",
-      "stage": "Quarter-Finals",
-      "status": "Finished",
-      "winner": "Saudi Arabia"
-    },
-    {
-      "id": "ac-qf-3",
-      "tournamentId": "arab-cup-2026",
-      "teamA": "Algeria",
-      "teamB": "Qatar",
-      "scoreA": 1,
-      "scoreB": 2,
-      "date": "2026-06-16T18:00:00",
-      "type": "Tournament Match",
-      "stage": "Quarter-Finals",
-      "status": "Finished",
-      "winner": "Qatar"
-    },
-    {
-      "id": "ac-qf-4",
-      "tournamentId": "arab-cup-2026",
-      "teamA": "Jordan",
-      "teamB": "Tunisia",
-      "scoreA": 0,
-      "scoreB": 1,
-      "date": "2026-06-16T21:00:00",
-      "type": "Tournament Match",
-      "stage": "Quarter-Finals",
-      "status": "Finished",
-      "winner": "Tunisia"
-    },
-    {
-      "id": "ac-sf-1",
+      "id": "ac-match-6",
       "tournamentId": "arab-cup-2026",
       "teamA": "Yemen",
       "teamB": "Saudi Arabia",
-      "scoreA": 2,
-      "scoreB": 1,
-      "date": "2026-06-20T20:00:00",
-      "type": "Tournament Match",
-      "stage": "Semi-Finals",
-      "status": "Finished",
-      "winner": "Yemen"
-    },
-    {
-      "id": "ac-sf-2",
-      "tournamentId": "arab-cup-2026",
-      "teamA": "Qatar",
-      "teamB": "Tunisia",
       "scoreA": null,
       "scoreB": null,
-      "date": "2026-06-21T20:00:00",
+      "date": "2026-06-20T20:00:00",
       "type": "Tournament Match",
-      "stage": "Semi-Finals",
+      "stage": "Quarter-Finals",
       "status": "Upcoming",
       "winner": null
     },
     {
-      "id": "ac-final",
+      "id": "ac-match-7",
       "tournamentId": "arab-cup-2026",
-      "teamA": "Yemen",
-      "teamB": "TBD",
+      "teamA": "Egypt",
+      "teamB": "Morocco",
       "scoreA": null,
       "scoreB": null,
-      "date": "2026-06-28T21:00:00",
+      "date": "2026-06-21T20:00:00",
       "type": "Tournament Match",
-      "stage": "Final",
+      "stage": "Quarter-Finals",
       "status": "Upcoming",
       "winner": null
     },
     {
       "id": "rc-match-1",
       "tournamentId": "rematch-championship",
-      "teamA": "Qatar",
-      "teamB": "UAE",
+      "teamA": "Iraq",
+      "teamB": "Qatar",
       "scoreA": 2,
-      "scoreB": 0,
-      "date": "2026-07-01T19:00:00",
-      "type": "Tournament Match",
-      "stage": "Group Stage",
-      "status": "Finished",
-      "winner": "Qatar"
-    },
-    {
-      "id": "rc-match-2",
-      "tournamentId": "rematch-championship",
-      "teamA": "Jordan",
-      "teamB": "Syria",
-      "scoreA": 1,
-      "scoreB": 2,
-      "date": "2026-07-02T19:00:00",
-      "type": "Tournament Match",
-      "stage": "Group Stage",
-      "status": "Finished",
-      "winner": "Syria"
-    },
-    {
-      "id": "fr-match-1",
-      "tournamentId": "arab-cup-2026",
-      "teamA": "Saudi Arabia",
-      "teamB": "UAE",
-      "scoreA": 2,
-      "scoreB": 2,
-      "date": "2026-05-15T18:00:00",
+      "scoreB": 1,
+      "date": "2026-05-20T19:00:00",
       "type": "Friendly",
       "stage": "Group Stage",
       "status": "Finished",
-      "winner": "Draw"
-    },
-    {
-      "id": "fr-match-2",
-      "tournamentId": "arab-cup-2026",
-      "teamA": "Egypt",
-      "teamB": "Jordan",
-      "scoreA": null,
-      "scoreB": null,
-      "date": "2026-06-12T17:00:00",
-      "type": "Friendly",
-      "stage": "Group Stage",
-      "status": "Upcoming",
-      "winner": null
+      "winner": "Iraq"
     }
   ],
   "teams": {
     "Yemen": {
       "nameEn": "Yemen",
-      "nameAr": "اليمن"
+      "nameAr": "اليمن",
+      "flag": "<svg viewBox=\"0 0 9 6\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"9\" height=\"2\" fill=\"#CE1126\"/><rect y=\"2\" width=\"9\" height=\"2\" fill=\"#FFFFFF\"/><rect y=\"4\" width=\"9\" height=\"2\" fill=\"#000000\"/></svg>",
+      "squad": []
     },
     "Palestine": {
       "nameEn": "Palestine",
-      "nameAr": "فلسطين"
+      "nameAr": "فلسطين",
+      "flag": "<svg viewBox=\"0 0 12 6\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"12\" height=\"2\" fill=\"#000000\"/><rect y=\"2\" width=\"12\" height=\"2\" fill=\"#FFFFFF\"/><rect y=\"4\" width=\"12\" height=\"2\" fill=\"#007A3D\"/><polygon points=\"0,0 4,3 0,6\" fill=\"#E4312B\"/></svg>",
+      "squad": []
     },
     "Egypt": {
       "nameEn": "Egypt",
-      "nameAr": "مصر"
+      "nameAr": "مصر",
+      "flag": "<svg viewBox=\"0 0 9 6\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"9\" height=\"2\" fill=\"#C8102E\"/><rect y=\"2\" width=\"9\" height=\"2\" fill=\"#FFFFFF\"/><rect y=\"4\" width=\"9\" height=\"2\" fill=\"#000000\"/><polygon points=\"4.5,2.5 4.3,2.8 4.5,3.1 4.7,2.8\" fill=\"#C09300\"/><circle cx=\"4.5\" cy=\"2.8\" r=\"0.15\" fill=\"#C09300\"/></svg>",
+      "squad": []
     },
     "Saudi Arabia": {
       "nameEn": "Saudi Arabia",
-      "nameAr": "السعودية"
+      "nameAr": "السعودية",
+      "flag": "<svg viewBox=\"0 0 3 2\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"3\" height=\"2\" fill=\"#006C35\"/><line x1="0.6" y1="1.4" x2="2.4" y2="1.4" stroke="#FFFFFF" stroke-width="0.1"/><path d="M 0.8 1.1 Q 1.5 0.7 2.2 1.1" stroke="#FFFFFF" stroke-width="0.04" fill="none"/></svg>",
+      "squad": []
     },
     "Morocco": {
       "nameEn": "Morocco",
-      "nameAr": "المغرب"
+      "nameAr": "المغرب",
+      "flag": "<svg viewBox=\"0 0 3 2\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"3\" height=\"2\" fill=\"#C1272D\"/><polygon points=\"1.5,0.6 1.6,0.9 1.9,0.9 1.65,1.1 1.75,1.4 1.5,1.2 1.25,1.4 1.35,1.1 1.1,0.9 1.4,0.9\" stroke=\"#006233\" stroke-width=\"0.06\" fill=\"none\"/></svg>",
+      "squad": []
     },
     "Algeria": {
       "nameEn": "Algeria",
-      "nameAr": "الجزائر"
+      "nameAr": "الجزائر",
+      "flag": "<svg viewBox=\"0 0 3 2\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"1.5\" height=\"2\" fill=\"#006233\"/><rect x=\"1.5\" width=\"1.5\" height=\"2\" fill=\"#FFFFFF\"/><path d=\"M1.7,0.7 A0.3,0.3 0 1,0 1.7,1.3 A0.22,0.22 0 1,1 1.74,1.23\" fill=\"#D21034\"/><polygon points=\"1.75,0.9 1.7,1.05 1.85,0.95 1.65,0.95 1.8,1.05\" fill=\"#D21034\"/></svg>",
+      "squad": []
     },
     "Tunisia": {
       "nameEn": "Tunisia",
-      "nameAr": "تونس"
+      "nameAr": "تونس",
+      "flag": "<svg viewBox=\"0 0 3 2\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"3\" height=\"2\" fill=\"#E01A22\"/><circle cx=\"1.5\" cy=\"1.0\" r=\"0.5\" fill=\"#FFFFFF\"/><path d=\"M1.6,0.75 A0.25,0.25 0 1,0 1.6,1.25 A0.2,0.2 0 1,1 1.63,1.2\" fill=\"#E01A22\"/><polygon points=\"1.62,0.9 1.58,1.05 1.72,0.95 1.52,0.95 1.68,1.05\" fill=\"#E01A22\"/></svg>",
+      "squad": []
     },
     "Iraq": {
       "nameEn": "Iraq",
-      "nameAr": "العراق"
+      "nameAr": "العراق",
+      "flag": "<svg viewBox=\"0 0 9 6\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"9\" height=\"2\" fill=\"#DA121A\"/><rect y=\"2\" width=\"9\" height=\"2\" fill=\"#FFFFFF\"/><rect y=\"4\" width=\"9\" height=\"2\" fill=\"#000000\"/></svg>",
+      "squad": []
     },
     "Qatar": {
       "nameEn": "Qatar",
-      "nameAr": "قطر"
+      "nameAr": "قطر",
+      "flag": "<svg viewBox=\"0 0 22 9\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"22\" height=\"9\" fill=\"#8D1B3D\"/><polygon points=\"0,0 6,0 8,0.5 6,1 8,1.5 6,2 8,2.5 6,3 8,3.5 6,4 8,4.5 6,5 8,5.5 6,6 8,6.5 6,7 8,7.5 6,8 8,8.5 6,9 0,9\" fill=\"#FFFFFF\"/></svg>",
+      "squad": []
     },
     "UAE": {
       "nameEn": "UAE",
-      "nameAr": "الإمارات"
+      "nameAr": "الإمارات",
+      "flag": "<svg viewBox=\"0 0 12 6\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"3\" width=\"9\" height=\"2\" fill=\"#00732F\"/><rect x=\"3\" y=\"2\" width=\"9\" height=\"2\" fill=\"#FFFFFF\"/><rect x=\"3\" y=\"4\" width=\"9\" height=\"2\" fill=\"#000000\"/><rect width=\"3\" height=\"6\" fill=\"#FF0000\"/></svg>",
+      "squad": []
     },
     "Jordan": {
       "nameEn": "Jordan",
-      "nameAr": "الأردن"
+      "nameAr": "الأردن",
+      "flag": "<svg viewBox=\"0 0 12 6\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"12\" height=\"2\" fill=\"#000000\"/><rect y=\"2\" width=\"12\" height=\"2\" fill=\"#FFFFFF\"/><rect y=\"4\" width=\"12\" height=\"2\" fill=\"#007A3D\"/><polygon points=\"0,0 6,3 0,6\" fill=\"#E4312B\"/><polygon points=\"2,3 2.2,3.3 1.9,3.1 1.7,3.3 1.8,3.0 1.5,2.8 1.9,2.8 2,2.5 2.1,2.8 2.5,2.8\" fill=\"#FFFFFF\"/></svg>",
+      "squad": []
     },
     "Syria": {
       "nameEn": "Syria",
-      "nameAr": "سوريا"
+      "nameAr": "سوريا",
+      "flag": "<svg viewBox=\"0 0 9 6\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"9\" height=\"2\" fill=\"#E31B23\"/><rect y=\"2\" width=\"9\" height=\"2\" fill=\"#FFFFFF\"/><rect y=\"4\" width=\"9\" height=\"2\" fill=\"#000000\"/><polygon points=\"3,3 3.15,3.35 2.85,3.15 2.55,3.35 2.7,3 2.4,2.8 2.8,2.8 3,2.5 3.2,2.8 3.6,2.8\" fill=\"#007A3D\"/><polygon points=\"6,3 6.15,3.35 5.85,3.15 5.55,3.35 5.7,3 5.4,2.8 5.8,2.8 6,2.5 6.2,2.8 6.6,2.8\" fill=\"#007A3D\"/></svg>",
+      "squad": []
     }
   }
 }

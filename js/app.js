@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let matchFilter = "all";
   let isAdminAuthorized = sessionStorage.getItem("rematch_admin") === "true";
   let editingMatchId = null;
+  let editingTeamId = null;
 
   // DOM Elements
   const htmlElement = document.documentElement;
@@ -54,6 +55,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const listAdminMatches = document.getElementById("admin-matches-list");
   const btnTriggerAddMatch = document.getElementById("btn-trigger-add-match");
 
+  // Team management DOM Elements
+  const formNewTeam = document.getElementById("form-new-team");
+  const listAdminTeams = document.getElementById("admin-teams-list");
+  const inputTeamNameEn = document.getElementById("team-name-en");
+  const inputTeamNameAr = document.getElementById("team-name-ar");
+  const inputTeamFlagSvg = document.getElementById("team-flag-svg");
+
   // Backend configuration form
   const formBackendSettings = document.getElementById("form-backend-settings");
   const inputBackendUrl = document.getElementById("backend-url-input");
@@ -74,6 +82,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   const matchFormType = document.getElementById("match-form-type");
   const matchFormStage = document.getElementById("match-form-stage");
   const matchFormStatus = document.getElementById("match-form-status");
+
+  // Squad Modal elements
+  const modalSquad = document.getElementById("squad-modal");
+  const btnCloseSquadModal = document.getElementById("btn-close-squad-modal");
+  const squadModalTitle = document.getElementById("squad-modal-title");
+  const squadModalTeamFlag = document.getElementById("squad-modal-team-flag");
+  const squadPlayersList = document.getElementById("squad-players-list");
+  
+  const formAddPlayer = document.getElementById("form-add-player");
+  const inputSquadTeamId = document.getElementById("squad-team-id");
+  const inputEditPlayerId = document.getElementById("edit-player-id");
+  const inputPlayerFormName = document.getElementById("player-form-name");
+  const selectPlayerFormPosition = document.getElementById("player-form-position");
+  const btnSavePlayer = document.getElementById("btn-save-player");
+  const btnCancelPlayerEdit = document.getElementById("btn-cancel-player-edit");
+  const playerFormHeading = document.getElementById("player-form-heading");
 
   // Toast notifications
   const toastContainer = document.getElementById("toast-notification");
@@ -199,14 +223,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (passcode === "1234") {
       isAdminAuthorized = true;
       sessionStorage.setItem("rematch_admin", "true");
-      inputAdminPasscode.value = "";
       errorAdminLogin.style.display = "none";
+      inputAdminPasscode.value = "";
       updateAdminUIState();
-      renderAdmin();
-      showToast(currentLang === "ar" ? "تم الدخول بنجاح كمسؤول" : "Successfully logged in as administrator");
+      renderAll();
+      showToast(currentLang === "ar" ? "تم التحقق بنجاح" : "Passcode verified successfully");
     } else {
       errorAdminLogin.style.display = "block";
-      showToast(getTranslation("invalidPasscode"), true);
     }
   }
 
@@ -214,46 +237,50 @@ document.addEventListener("DOMContentLoaded", async () => {
     isAdminAuthorized = false;
     sessionStorage.removeItem("rematch_admin");
     updateAdminUIState();
-    showToast(currentLang === "ar" ? "تم الخروج من وضع المسؤول" : "Exited Administrator Mode");
+    renderAll();
   }
 
   // ==========================================
-  // Auto Progression for Knockout Brackets
+  // Knockout progression calculator
   // ==========================================
-  
-  async function applyKnockoutProgression(match) {
-    if (match.type !== "Tournament Match" || match.stage === "Group Stage") return;
-    if (match.status !== "Finished" || !match.winner || match.winner === "Draw") return;
 
-    const tMatches = store.matches.filter(m => m.tournamentId === match.tournamentId && m.type === "Tournament Match");
+  async function applyKnockoutProgression(match) {
+    if (match.stage === "Group Stage") return;
+    if (match.status !== "Finished" || !match.winner) return;
+
+    const activeId = store.activeTournamentId;
+    const tMatches = store.matches.filter(m => m.tournamentId === activeId && m.type === "Tournament Match");
     
     const qfMatches = tMatches.filter(m => m.stage === "Quarter-Finals").sort((a,b) => new Date(a.date) - new Date(b.date));
     const sfMatches = tMatches.filter(m => m.stage === "Semi-Finals").sort((a,b) => new Date(a.date) - new Date(b.date));
     const finalMatches = tMatches.filter(m => m.stage === "Final");
 
-    const updateTargetSlot = async (targetMatch, isTeamA, valueName) => {
+    const updateTargetSlot = async (targetMatch, isTeamA, value) => {
       if (!targetMatch) return;
-      if (isTeamA) {
-        targetMatch.teamA = valueName;
-      } else {
-        targetMatch.teamB = valueName;
-      }
+      if (isTeamA) targetMatch.teamA = value;
+      else targetMatch.teamB = value;
       await store.updateMatch(targetMatch);
     };
 
     const qfIndex = qfMatches.findIndex(m => m.id === match.id);
     if (qfIndex !== -1) {
-      if (qfIndex === 0) await updateTargetSlot(sfMatches[0], true, match.winner);
-      if (qfIndex === 1) await updateTargetSlot(sfMatches[0], false, match.winner);
-      if (qfIndex === 2) await updateTargetSlot(sfMatches[1], true, match.winner);
-      if (qfIndex === 3) await updateTargetSlot(sfMatches[1], false, match.winner);
+      if (sfMatches[0]) {
+        if (qfIndex === 0) await updateTargetSlot(sfMatches[0], true, match.winner);
+        if (qfIndex === 1) await updateTargetSlot(sfMatches[0], false, match.winner);
+      }
+      if (sfMatches[1]) {
+        if (qfIndex === 2) await updateTargetSlot(sfMatches[1], true, match.winner);
+        if (qfIndex === 3) await updateTargetSlot(sfMatches[1], false, match.winner);
+      }
       return;
     }
 
     const sfIndex = sfMatches.findIndex(m => m.id === match.id);
     if (sfIndex !== -1) {
-      if (sfIndex === 0) await updateTargetSlot(finalMatches[0], true, match.winner);
-      if (sfIndex === 1) await updateTargetSlot(finalMatches[0], false, match.winner);
+      if (finalMatches[0]) {
+        if (sfIndex === 0) await updateTargetSlot(finalMatches[0], true, match.winner);
+        if (sfIndex === 1) await updateTargetSlot(finalMatches[0], false, match.winner);
+      }
       return;
     }
   }
@@ -344,7 +371,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         ${typeTag}
         ${stageTag}
         
-        <div class="match-team team-a">
+        <div class="match-team team-a" onclick="window.rematchApp.viewSquad('${match.teamA}')" style="cursor: pointer;">
           <div class="team-flag">${flagA}</div>
           <div class="team-name">${nameA}</div>
           ${winnerA}
@@ -360,7 +387,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <div class="match-status-badge ${statusClass}">${getTranslation(statusTextKey)}</div>
         </div>
         
-        <div class="match-team team-b">
+        <div class="match-team team-b" onclick="window.rematchApp.viewSquad('${match.teamB}')" style="cursor: pointer;">
           <div class="team-flag">${flagB}</div>
           <div class="team-name">${nameB}</div>
           ${winnerB}
@@ -434,7 +461,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const flagSvg = teamData.flag || `🏳️`;
 
       rows += `
-        <tr>
+        <tr onclick="window.rematchApp.viewSquad('${teamEntry.name}')" style="cursor: pointer;">
           <td><strong>${idx + 1}</strong></td>
           <td>
             <div class="table-team-cell">
@@ -500,14 +527,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       return `
         <div class="bracket-matchup ${hasWinner ? 'has-winner' : ''}">
-          <div class="bracket-team-row ${isWinnerA ? 'is-winner' : (hasWinner ? 'is-loser' : '')}">
+          <div class="bracket-team-row ${isWinnerA ? 'is-winner' : (hasWinner ? 'is-loser' : '')}" onclick="${tA !== 'TBD' ? `window.rematchApp.viewSquad('${tA}')` : ''}" style="${tA !== 'TBD' ? 'cursor:pointer;' : ''}">
             <div class="bracket-team-name">
               <div class="team-flag" style="display:inline-block; width:20px; height:13px; margin-right:6px; vertical-align:middle;">${flagA}</div>
               <span>${nameA}</span>
             </div>
             <div class="bracket-team-score">${scoreA}</div>
           </div>
-          <div class="bracket-team-row ${isWinnerB ? 'is-winner' : (hasWinner ? 'is-loser' : '')}">
+          <div class="bracket-team-row ${isWinnerB ? 'is-winner' : (hasWinner ? 'is-loser' : '')}" onclick="${tB !== 'TBD' ? `window.rematchApp.viewSquad('${tB}')` : ''}" style="${tB !== 'TBD' ? 'cursor:pointer;' : ''}">
             <div class="bracket-team-name">
               <div class="team-flag" style="display:inline-block; width:20px; height:13px; margin-right:6px; vertical-align:middle;">${flagB}</div>
               <span>${nameB}</span>
@@ -554,7 +581,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       <div class="champion-podium">
         <div class="trophy-glow">🏆</div>
-        <div class="champion-card">
+        <div class="champion-card" onclick="${championName !== getTranslation('tbd') ? `window.rematchApp.viewSquad('${finalMatch.winner}')` : ''}" style="${championName !== getTranslation('tbd') ? 'cursor:pointer;' : ''}">
           <div style="font-size: 11px; font-weight:700; color:var(--warning); text-transform:uppercase;" data-i18n="champion">${getTranslation("champion")}</div>
           <div class="team-flag" style="width:60px; height:40px; margin: 10px auto 4px;">${championFlag}</div>
           <div class="champion-name">${championName}</div>
@@ -568,6 +595,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   function renderAdmin() {
     if (!isAdminAuthorized) return;
 
+    // Tournaments List
     const tourneys = store.tournaments;
     let tourneysHtml = "";
     tourneys.forEach(t => {
@@ -586,6 +614,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     listAdminTournaments.innerHTML = tourneysHtml;
 
+    // Teams List
+    const teamsKeys = Object.keys(store.teams);
+    let teamsHtml = "";
+    if (teamsKeys.length === 0) {
+      teamsHtml = `<p class="text-center" style="color:var(--text-muted); padding:20px;">No teams found</p>`;
+    } else {
+      teamsKeys.forEach(tKey => {
+        const teamObj = store.teams[tKey];
+        const name = currentLang === "ar" ? teamObj.nameAr : teamObj.nameEn;
+        teamsHtml += `
+          <div class="admin-list-item">
+            <div class="item-details" style="display:flex; align-items:center; gap:10px;">
+              <div style="width:30px; height:20px;">${teamObj.flag}</div>
+              <div>
+                <span class="item-title">${name}</span>
+                <span class="item-subtitle">${teamObj.squad ? teamObj.squad.length : 0} Players</span>
+              </div>
+            </div>
+            <div class="item-actions">
+              <button class="btn btn-secondary btn-small" onclick="window.rematchAdminActions.openEditTeam('${tKey}')">✏️</button>
+              <button class="btn btn-danger btn-small" onclick="window.rematchAdminActions.deleteTeam('${tKey}')">🗑️</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+    listAdminTeams.innerHTML = teamsHtml;
+
+    // Matches List
     const matches = store.getMatches(store.activeTournamentId);
     let matchesHtml = "";
     if (matches.length === 0) {
@@ -668,8 +725,115 @@ document.addEventListener("DOMContentLoaded", async () => {
       matchFormStatus.value = match.status;
 
       modalMatch.classList.add("active");
+    },
+    openEditTeam: (id) => {
+      const teamObj = store.teams[id];
+      if (!teamObj) return;
+      editingTeamId = id;
+      inputTeamNameEn.value = teamObj.nameEn;
+      inputTeamNameAr.value = teamObj.nameAr;
+      inputTeamFlagSvg.value = teamObj.flag;
+      document.querySelector("#form-new-team button[type='submit']").textContent = currentLang === 'ar' ? 'تحديث الفريق' : 'Update Team';
+    },
+    deleteTeam: async (id) => {
+      if (confirm(currentLang === "ar" ? "هل أنت متأكد من حذف هذا الفريق؟ سيؤدي ذلك لتأثر المباريات الخاصة به." : "Are you sure you want to delete this team? This affects their matches.")) {
+        await store.deleteTeam(id);
+        populateTeamSelectors();
+        renderAll();
+        showToast(currentLang === "ar" ? "تم حذف الفريق بنجاح" : "Team deleted successfully");
+      }
     }
   };
+
+  window.rematchApp = {
+    viewSquad: (teamId) => {
+      const team = store.teams[teamId];
+      if (!team) return;
+
+      inputSquadTeamId.value = teamId;
+      squadModalTeamFlag.innerHTML = team.flag || "🏳️";
+      squadModalTitle.textContent = currentLang === "ar" ? `تشكيلة ${team.nameAr}` : `${team.nameEn} Squad`;
+
+      // Render players roster
+      renderSquadRoster(teamId);
+
+      // Toggle Admin sections
+      const adminOnlyCells = document.querySelectorAll(".admin-only-cell");
+      const adminOnlySections = document.querySelectorAll(".admin-only-section");
+      
+      if (isAdminAuthorized) {
+        adminOnlyCells.forEach(el => el.style.display = "");
+        adminOnlySections.forEach(el => el.style.display = "block");
+      } else {
+        adminOnlyCells.forEach(el => el.style.display = "none");
+        adminOnlySections.forEach(el => el.style.display = "none");
+      }
+
+      formAddPlayer.reset();
+      inputEditPlayerId.value = "";
+      btnCancelPlayerEdit.style.display = "none";
+      btnSavePlayer.textContent = getTranslation("save");
+      playerFormHeading.textContent = getTranslation("addPlayer");
+
+      modalSquad.classList.add("active");
+    },
+    editPlayer: (playerId) => {
+      const teamId = inputSquadTeamId.value;
+      const team = store.teams[teamId];
+      if (!team) return;
+      const player = team.squad.find(p => p.id === playerId);
+      if (!player) return;
+
+      inputEditPlayerId.value = playerId;
+      inputPlayerFormName.value = player.name;
+      selectPlayerFormPosition.value = player.position;
+      btnCancelPlayerEdit.style.display = "inline-block";
+      btnSavePlayer.textContent = currentLang === "ar" ? "تحديث" : "Update";
+      playerFormHeading.textContent = getTranslation("editPlayer");
+    },
+    deletePlayer: async (playerId) => {
+      const teamId = inputSquadTeamId.value;
+      if (confirm(currentLang === "ar" ? "هل أنت متأكد من حذف هذا اللاعب؟" : "Are you sure you want to delete this player?")) {
+        await store.deletePlayer(teamId, playerId);
+        renderSquadRoster(teamId);
+        renderAll();
+        showToast(currentLang === "ar" ? "تم حذف اللاعب بنجاح" : "Player removed successfully");
+      }
+    }
+  };
+
+  function renderSquadRoster(teamId) {
+    const team = store.teams[teamId];
+    if (!team || !team.squad) {
+      squadPlayersList.innerHTML = `<tr><td colspan="3" class="text-center" style="color:var(--text-muted);">No players in squad</td></tr>`;
+      return;
+    }
+
+    if (team.squad.length === 0) {
+      squadPlayersList.innerHTML = `<tr><td colspan="3" class="text-center" style="color:var(--text-muted);">${currentLang === 'ar' ? 'لا يوجد لاعبون في التشكيلة بعد' : 'No players in squad yet'}</td></tr>`;
+      return;
+    }
+
+    let html = "";
+    team.squad.forEach(p => {
+      const posLabel = getTranslation(p.position.toLowerCase());
+      const actionsHtml = isAdminAuthorized ? `
+        <td class="admin-only-cell" style="text-align: center;">
+          <button class="btn btn-secondary btn-small" style="padding: 2px 8px;" onclick="window.rematchApp.editPlayer('${p.id}')">✏️</button>
+          <button class="btn btn-danger btn-small" style="padding: 2px 8px;" onclick="window.rematchApp.deletePlayer('${p.id}')">🗑️</button>
+        </td>
+      ` : "";
+      
+      html += `
+        <tr>
+          <td><strong>${p.name}</strong></td>
+          <td>${posLabel}</td>
+          ${actionsHtml}
+        </tr>
+      `;
+    });
+    squadPlayersList.innerHTML = html;
+  }
 
   // ==========================================
   // Event Bindings
@@ -706,6 +870,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   btnResetData.addEventListener("click", async () => {
     if (confirm(currentLang === "ar" ? "هل تريد بالتأكيد مسح التعديلات والعودة للبيانات الافتراضية؟" : "Reset all edits to default mock data?")) {
       await store.resetToDefaults();
+      populateTeamSelectors();
       renderAll();
       showToast(getTranslation("resetSuccess"));
     }
@@ -739,6 +904,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
       showToast(currentLang === "ar" ? "تمت إزالة رابط خادم البيانات" : "Backend URL cleared");
     }
+    populateTeamSelectors();
     renderAll();
   });
 
@@ -761,6 +927,62 @@ document.addEventListener("DOMContentLoaded", async () => {
     showToast(currentLang === "ar" ? "تم إنشاء البطولة بنجاح" : "Tournament created successfully");
   });
 
+  // Team Form submit handler
+  formNewTeam.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nameEn = inputTeamNameEn.value.trim();
+    const nameAr = inputTeamNameAr.value.trim();
+    const flag = inputTeamFlagSvg.value.trim();
+
+    if (editingTeamId) {
+      await store.updateTeam(editingTeamId, { nameEn, nameAr, flag });
+      showToast(currentLang === "ar" ? "تم تحديث الفريق بنجاح" : "Team updated successfully");
+      editingTeamId = null;
+      document.querySelector("#form-new-team button[type='submit']").textContent = getTranslation("saveTeam");
+    } else {
+      const teamId = nameEn;
+      await store.addTeam(teamId, { nameEn, nameAr, flag });
+      showToast(currentLang === "ar" ? "تمت إضافة الفريق بنجاح" : "Team added successfully");
+    }
+
+    formNewTeam.reset();
+    populateTeamSelectors();
+    renderAll();
+  });
+
+  // Squad form add/edit player handler
+  formAddPlayer.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const teamId = inputSquadTeamId.value;
+    const playerName = inputPlayerFormName.value.trim();
+    const playerPos = selectPlayerFormPosition.value;
+    const editPlayerId = inputEditPlayerId.value;
+
+    if (editPlayerId) {
+      await store.updatePlayer(teamId, editPlayerId, { name: playerName, position: playerPos });
+      showToast(currentLang === "ar" ? "تم تحديث اللاعب بنجاح" : "Player updated successfully");
+    } else {
+      await store.addPlayer(teamId, { name: playerName, position: playerPos });
+      showToast(currentLang === "ar" ? "تمت إضافة اللاعب بنجاح" : "Player added to squad");
+    }
+
+    formAddPlayer.reset();
+    inputEditPlayerId.value = "";
+    btnCancelPlayerEdit.style.display = "none";
+    btnSavePlayer.textContent = getTranslation("save");
+    playerFormHeading.textContent = getTranslation("addPlayer");
+    renderSquadRoster(teamId);
+    renderAll();
+  });
+
+  btnCancelPlayerEdit.addEventListener("click", () => {
+    formAddPlayer.reset();
+    inputEditPlayerId.value = "";
+    btnCancelPlayerEdit.style.display = "none";
+    btnSavePlayer.textContent = getTranslation("save");
+    playerFormHeading.textContent = getTranslation("addPlayer");
+  });
+
   btnTriggerAddMatch.addEventListener("click", () => {
     editingMatchId = null;
     formMatchEditor.reset();
@@ -780,10 +1002,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   btnCloseModal.addEventListener("click", () => modalMatch.classList.remove("active"));
   btnCancelModal.addEventListener("click", () => modalMatch.classList.remove("active"));
+  btnCloseSquadModal.addEventListener("click", () => modalSquad.classList.remove("active"));
   
   window.addEventListener("click", (e) => {
     if (e.target === modalMatch) {
       modalMatch.classList.remove("active");
+    }
+    if (e.target === modalSquad) {
+      modalSquad.classList.remove("active");
     }
   });
 

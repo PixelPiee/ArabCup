@@ -96,6 +96,26 @@ const translations = {
     backendSaveSuccess: "API URL updated successfully!",
     backendConnected: "Connected to API Server!",
     backendFallback: "API Server offline. Falling back to local storage.",
+
+    // Squad and Team management translation keys
+    manageTeams: "Manage Teams",
+    createNewTeam: "Create New Team",
+    teamNameEn: "Team Name (English)",
+    teamNameAr: "Team Name (Arabic)",
+    teamFlag: "Team Flag (SVG string)",
+    saveTeam: "Save Team",
+    squadTitle: "Team Squad",
+    playerName: "Player Name",
+    playerPosition: "Position",
+    addPlayer: "Add Player",
+    editPlayer: "Edit Player",
+    deletePlayer: "Delete Player",
+    goalkeeper: "Goalkeeper",
+    defender: "Defender",
+    midfielder: "Midfielder",
+    forward: "Forward",
+    action: "Action",
+    squadView: "View Squad",
     
     // Team names (Translations database)
     "Yemen": "Yemen",
@@ -240,6 +260,26 @@ const translations = {
     backendSaveSuccess: "تم تحديث رابط خادم البيانات بنجاح!",
     backendConnected: "تم الاتصال بخادم البيانات بنجاح!",
     backendFallback: "خادم البيانات غير متصل. تم التحول للتخزين المحلي.",
+
+    // Squad and Team management translation keys
+    manageTeams: "إدارة الفرق",
+    createNewTeam: "إنشاء فريق جديد",
+    teamNameEn: "اسم الفريق (بالإنجليزي)",
+    teamNameAr: "اسم الفريق (بالعربي)",
+    teamFlag: "علم الفريق (SVG كود)",
+    saveTeam: "حفظ الفريق",
+    squadTitle: "تشكيلة الفريق",
+    playerName: "اسم اللاعب",
+    playerPosition: "المركز",
+    addPlayer: "إضافة لاعب",
+    editPlayer: "تعديل لاعب",
+    deletePlayer: "حذف لاعب",
+    goalkeeper: "حارس مرمى",
+    defender: "مدافع",
+    midfielder: "لاعب وسط",
+    forward: "مهاجم",
+    action: "الإجراء",
+    squadView: "عرض التشكيلة",
     
     // Team names (Translations database)
     "Yemen": "اليمن",
