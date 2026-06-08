@@ -381,23 +381,32 @@ class RematchDataStore {
     const tournament = this.tournaments.find(t => t.id === tournamentId);
     if (!tournament) return [];
 
-    const groupMatches = this.matches.filter(
-      m => m.tournamentId === tournamentId && m.type === "Tournament Match" && m.stage === "Group Stage" && m.status === "Finished"
+    // Initialize table for all teams (ensure they appear even with no matches)
+    const table = {};
+    Object.keys(this.teams).forEach(teamId => {
+      table[teamId] = {
+        name: teamId,
+        played: 0,
+        won: 0,
+        drawn: 0,
+        lost: 0,
+        goalsFor: 0,
+        goalsAgainst: 0,
+        goalDiff: 0,
+        points: 0
+      };
+    });
+
+    // Consider all finished matches for this tournament (any stage)
+    const finishedMatches = this.matches.filter(
+      m => m.tournamentId === tournamentId && m.status === "Finished"
     );
 
-    const table = {};
-    const ensureEntry = (teamId) => {
-      if (!table[teamId]) {
-        table[teamId] = { name: teamId, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, goalDiff: 0, points: 0 };
-      }
-    };
-
-    groupMatches.forEach(m => {
+    finishedMatches.forEach(m => {
       if (m.teamA === "TBD" || m.teamB === "TBD") return;
-      ensureEntry(m.teamA);
-      ensureEntry(m.teamB);
       const a = table[m.teamA];
       const b = table[m.teamB];
+      if (!a || !b) return;
       a.played++;
       b.played++;
       a.goalsFor += m.scoreA || 0;
@@ -417,6 +426,7 @@ class RematchDataStore {
       }
     });
 
+    // Compute goal difference and sort standings
     return Object.values(table)
       .map(e => ({ ...e, goalDiff: e.goalsFor - e.goalsAgainst }))
       .sort((a, b) => b.points - a.points || b.goalDiff - a.goalDiff || b.goalsFor - a.goalsFor);
