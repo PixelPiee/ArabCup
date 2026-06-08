@@ -177,16 +177,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     matchFormTeamB.innerHTML = options;
   }
 
-  // Handle file reading for team flag
+  // Handle file reading for team flag — resize to max 120×80 to stay within localStorage limits
   function handleFlagFile(file) {
     if (!file || !file.type.startsWith("image/")) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-      const dataUrl = e.target.result;
-      inputTeamFlagSvg.value = dataUrl;
-      flagPreview.innerHTML = `<img src="${dataUrl}" style="width: 100%; height: 100%; object-fit: cover;">`;
-      flagPreview.style.display = "block";
-      dropZoneText.style.display = "none";
+      const img = new Image();
+      img.onload = () => {
+        // Resize using canvas to keep data-URL small
+        const MAX_W = 120, MAX_H = 80;
+        let w = img.width, h = img.height;
+        if (w > MAX_W || h > MAX_H) {
+          const ratio = Math.min(MAX_W / w, MAX_H / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        const compressed = canvas.toDataURL("image/jpeg", 0.75);
+        inputTeamFlagSvg.value = compressed;
+        flagPreview.innerHTML = `<img src="${compressed}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        flagPreview.style.display = "block";
+        dropZoneText.style.display = "none";
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }

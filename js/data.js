@@ -169,7 +169,25 @@ class RematchDataStore {
         tournaments: this.tournaments,
         matches: this.matches
       }));
-    } catch (e) { console.error("Failed to save local backup:", e); }
+    } catch (e) {
+      // Likely QuotaExceededError — flag images too large
+      console.error("localStorage save failed:", e);
+      // Try saving without squad flag images as fallback
+      try {
+        const lightTeams = {};
+        Object.keys(this.teams).forEach(k => {
+          lightTeams[k] = { ...this.teams[k], flag: this.teams[k].flag && this.teams[k].flag.startsWith("<svg") ? this.teams[k].flag : "" };
+        });
+        localStorage.setItem("rematch_data", JSON.stringify({
+          teams: lightTeams,
+          tournaments: this.tournaments,
+          matches: this.matches
+        }));
+        console.warn("Saved without large flag images due to storage quota.");
+      } catch (e2) {
+        console.error("All localStorage save attempts failed:", e2);
+      }
+    }
   }
 
   // -------------------------------------------------------
