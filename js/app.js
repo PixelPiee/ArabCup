@@ -698,6 +698,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
           </div>
         `;
+      });
     }
     listAdminTeams.innerHTML = teamsHtml;
 
