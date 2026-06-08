@@ -60,7 +60,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const listAdminTeams = document.getElementById("admin-teams-list");
   const inputTeamNameEn = document.getElementById("team-name-en");
   const inputTeamNameAr = document.getElementById("team-name-ar");
+  
+  // Flag drag-and-drop elements
+  const flagDropZone = document.getElementById("flag-drop-zone");
+  const teamFlagFile = document.getElementById("team-flag-file");
+  const flagPreview = document.getElementById("flag-preview");
   const inputTeamFlagSvg = document.getElementById("team-flag-svg");
+  const dropZoneText = document.getElementById("drop-zone-text");
 
   // Backend configuration form
   const formBackendSettings = document.getElementById("form-backend-settings");
@@ -148,6 +154,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     return date.toLocaleDateString(currentLang === "ar" ? "ar-EG" : "en-US", options);
   }
 
+  function renderFlag(flagCode) {
+    if (!flagCode) return `<div style="font-size:24px;">🏳️</div>`;
+    const cleaned = flagCode.trim();
+    if (cleaned.startsWith("<svg") || cleaned.startsWith("<SVG")) {
+      return cleaned;
+    }
+    return `<img src="${cleaned}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;" alt="Flag">`;
+  }
+
   function populateTeamSelectors() {
     const teams = store.teams;
     let options = `<option value="TBD">${getTranslation("tbd")}</option>`;
@@ -160,6 +175,50 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     matchFormTeamA.innerHTML = options;
     matchFormTeamB.innerHTML = options;
+  }
+
+  // Handle file reading for team flag
+  function handleFlagFile(file) {
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      inputTeamFlagSvg.value = dataUrl;
+      flagPreview.innerHTML = `<img src="${dataUrl}" style="width: 100%; height: 100%; object-fit: cover;">`;
+      flagPreview.style.display = "block";
+      dropZoneText.style.display = "none";
+    };
+    reader.readAsDataURL(file);
+  }
+
+  if (flagDropZone) {
+    flagDropZone.addEventListener("click", () => teamFlagFile.click());
+    
+    flagDropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      flagDropZone.style.borderColor = "var(--accent-primary)";
+      flagDropZone.style.background = "rgba(99, 102, 241, 0.05)";
+    });
+
+    flagDropZone.addEventListener("dragleave", () => {
+      flagDropZone.style.borderColor = "var(--border-light)";
+      flagDropZone.style.background = "rgba(255, 255, 255, 0.01)";
+    });
+
+    flagDropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      flagDropZone.style.borderColor = "var(--border-light)";
+      flagDropZone.style.background = "rgba(255, 255, 255, 0.01)";
+      if (e.dataTransfer.files.length > 0) {
+        handleFlagFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    teamFlagFile.addEventListener("change", (e) => {
+      if (e.target.files.length > 0) {
+        handleFlagFile(e.target.files[0]);
+      }
+    });
   }
 
   // ==========================================
@@ -329,8 +388,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const nameA = currentLang === "ar" ? teamAObj.nameAr : teamAObj.nameEn;
     const nameB = currentLang === "ar" ? teamBObj.nameAr : teamBObj.nameEn;
 
-    const flagA = teamAObj.flag || `<div style="font-size:24px;">🏳️</div>`;
-    const flagB = teamBObj.flag || `<div style="font-size:24px;">🏳️</div>`;
+    const flagA = renderFlag(teamAObj.flag);
+    const flagB = renderFlag(teamBObj.flag);
 
     const scoreA = match.scoreA !== null ? match.scoreA : "-";
     const scoreB = match.scoreB !== null ? match.scoreB : "-";
@@ -458,7 +517,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     standings.forEach((teamEntry, idx) => {
       const teamData = store.teams[teamEntry.name] || { nameEn: teamEntry.name, nameAr: teamEntry.name, flag: "" };
       const teamName = currentLang === "ar" ? teamData.nameAr : teamData.nameEn;
-      const flagSvg = teamData.flag || `🏳️`;
+      const flagSvg = renderFlag(teamData.flag);
 
       rows += `
         <tr onclick="window.rematchApp.viewSquad('${teamEntry.name}')" style="cursor: pointer;">
@@ -515,8 +574,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const nameA = tA === "TBD" ? getTranslation("tbd") : (currentLang === "ar" ? teamAObj.nameAr : teamAObj.nameEn);
       const nameB = tB === "TBD" ? getTranslation("tbd") : (currentLang === "ar" ? teamBObj.nameAr : teamBObj.nameEn);
 
-      const flagA = tA === "TBD" ? "🏳️" : teamAObj.flag;
-      const flagB = tB === "TBD" ? "🏳️" : teamBObj.flag;
+      const flagA = tA === "TBD" ? "🏳️" : renderFlag(teamAObj.flag);
+      const flagB = tB === "TBD" ? "🏳️" : renderFlag(teamBObj.flag);
 
       const scoreA = match.scoreA !== null ? match.scoreA : "";
       const scoreB = match.scoreB !== null ? match.scoreB : "";
@@ -553,7 +612,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const champObj = store.teams[champ];
       if (champObj) {
         championName = currentLang === "ar" ? champObj.nameAr : champObj.nameEn;
-        championFlag = champObj.flag;
+        championFlag = renderFlag(champObj.flag);
       } else {
         championName = champ;
       }
@@ -623,10 +682,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       teamsKeys.forEach(tKey => {
         const teamObj = store.teams[tKey];
         const name = currentLang === "ar" ? teamObj.nameAr : teamObj.nameEn;
+        const flagElement = renderFlag(teamObj.flag);
         teamsHtml += `
           <div class="admin-list-item">
             <div class="item-details" style="display:flex; align-items:center; gap:10px;">
-              <div style="width:30px; height:20px;">${teamObj.flag}</div>
+              <div style="width:30px; height:20px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 2px;">${flagElement}</div>
               <div>
                 <span class="item-title">${name}</span>
                 <span class="item-subtitle">${teamObj.squad ? teamObj.squad.length : 0} Players</span>
@@ -733,6 +793,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       inputTeamNameEn.value = teamObj.nameEn;
       inputTeamNameAr.value = teamObj.nameAr;
       inputTeamFlagSvg.value = teamObj.flag;
+      
+      if (teamObj.flag) {
+        flagPreview.innerHTML = renderFlag(teamObj.flag);
+        flagPreview.style.display = "block";
+        dropZoneText.style.display = "none";
+      } else {
+        flagPreview.style.display = "none";
+        dropZoneText.style.display = "block";
+      }
+      
       document.querySelector("#form-new-team button[type='submit']").textContent = currentLang === 'ar' ? 'تحديث الفريق' : 'Update Team';
     },
     deleteTeam: async (id) => {
@@ -751,7 +821,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!team) return;
 
       inputSquadTeamId.value = teamId;
-      squadModalTeamFlag.innerHTML = team.flag || "🏳️";
+      squadModalTeamFlag.innerHTML = renderFlag(team.flag);
       squadModalTitle.textContent = currentLang === "ar" ? `تشكيلة ${team.nameAr}` : `${team.nameEn} Squad`;
 
       // Render players roster
@@ -946,6 +1016,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     formNewTeam.reset();
+    flagPreview.style.display = "none";
+    dropZoneText.style.display = "block";
+    inputTeamFlagSvg.value = "";
     populateTeamSelectors();
     renderAll();
   });
