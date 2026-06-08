@@ -685,20 +685,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         const flagElement = renderFlag(teamObj.flag);
         teamsHtml += `
           <div class="admin-list-item">
-            <div class="item-details" style="display:flex; align-items:center; gap:10px;">
-              <div style="width:30px; height:20px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 2px;">${flagElement}</div>
+            <div class="item-details" onclick="window.rematchApp.viewSquad('${tKey}')" style="display:flex; align-items:center; gap:10px; cursor: pointer; flex-grow: 1;">
+              <div style="width:30px; height:20px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 2px; flex-shrink: 0;">${flagElement}</div>
               <div>
                 <span class="item-title">${name}</span>
-                <span class="item-subtitle">${teamObj.squad ? teamObj.squad.length : 0} Players</span>
+                <span class="item-subtitle" style="display: block; font-size: 11px; color: var(--text-secondary);">${teamObj.squad ? teamObj.squad.length : 0} Players (Click to view squad)</span>
               </div>
             </div>
-            <div class="item-actions">
+            <div class="item-actions" style="flex-shrink: 0; margin-left: 10px;">
               <button class="btn btn-secondary btn-small" onclick="window.rematchAdminActions.openEditTeam('${tKey}')">✏️</button>
               <button class="btn btn-danger btn-small" onclick="window.rematchAdminActions.deleteTeam('${tKey}')">🗑️</button>
             </div>
           </div>
         `;
-      });
     }
     listAdminTeams.innerHTML = teamsHtml;
 
