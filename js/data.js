@@ -108,7 +108,7 @@ class RematchDataStore {
     if (this.backendUrl) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
         const resp = await fetch(`${this.backendUrl}/api/teams`, { signal: controller.signal });
         clearTimeout(timeoutId);
 
@@ -441,8 +441,9 @@ class RematchDataStore {
     if (!this.backendUrl) { this.isApiActive = false; return false; }
     try {
       const controller = new AbortController();
-      setTimeout(() => controller.abort(), 4000);
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
       const resp = await fetch(`${this.backendUrl}/api/teams`, { signal: controller.signal });
+      clearTimeout(timeoutId);
       if (resp.ok) {
         this.isApiActive = true;
         await this._loadFromApi();
