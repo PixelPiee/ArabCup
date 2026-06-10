@@ -130,9 +130,9 @@ class RematchDataStore {
   async _loadFromApi() {
     try {
       const [teamsResp, tourneysResp, matchesResp] = await Promise.all([
-        fetch(`${this.backendUrl}/api/teams`),
-        fetch(`${this.backendUrl}/api/tournaments`),
-        fetch(`${this.backendUrl}/api/matches`)
+        fetch(`${this.backendUrl}/api/teams`, { cache: 'no-store' }),
+        fetch(`${this.backendUrl}/api/tournaments`, { cache: 'no-store' }),
+        fetch(`${this.backendUrl}/api/matches`, { cache: 'no-store' })
       ]);
       const teamsArr = await teamsResp.json();
       // Convert array back to object keyed by id
